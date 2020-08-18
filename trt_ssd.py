@@ -37,7 +37,7 @@ def parse_args():
             'SSD model on Jetson Nano')
     parser = argparse.ArgumentParser(description=desc)
     parser = add_camera_args(parser)
-    parser.add_argument('--model', type=str, default='ssd_mobilenet_v2_coco',
+    parser.add_argument('--model', type=str, default='ssd_mobilenet_v1_thermal',
                         choices=SUPPORTED_MODELS)
     args = parser.parse_args()
     return args
@@ -58,7 +58,10 @@ def loop_and_detect(cam, trt_ssd, conf_th, vis):
     while True:
         if cv2.getWindowProperty(WINDOW_NAME, 0) < 0:
             break
-        img = cam.read()
+        ret,img = cam.read()
+        #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        
         if img is not None:
             boxes, confs, clss = trt_ssd.detect(img, conf_th)
             img = vis.draw_bboxes(img, boxes, confs, clss)
@@ -79,21 +82,19 @@ def loop_and_detect(cam, trt_ssd, conf_th, vis):
 
 def main():
     args = parse_args()
-    cam = Camera(args)
-    cam.open()
-    if not cam.is_opened:
-        sys.exit('Failed to open camera!')
+    cam = cv2.VideoCapture(0)
+  
 
     cls_dict = get_cls_dict(args.model.split('_')[-1])
     trt_ssd = TrtSSD(args.model, INPUT_HW)
 
-    cam.start()
+    
     open_window(WINDOW_NAME, args.image_width, args.image_height,
                 'Camera TensorRT SSD Demo for Jetson Nano')
     vis = BBoxVisualization(cls_dict)
     loop_and_detect(cam, trt_ssd, conf_th=0.3, vis=vis)
 
-    cam.stop()
+    
     cam.release()
     cv2.destroyAllWindows()
 
