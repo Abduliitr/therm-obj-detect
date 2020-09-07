@@ -15,11 +15,6 @@ mtcnn/chobj
 mtcnn/dchobj
 mtcnn/create_engines
 
-ssd/libflattenconcat.so
-ssd/*.uff
-ssd/*.pbtxt
-ssd/*.bin
-ssd/*.json
 
 yolov3_onnx/yolov3*.cfg
 yolov3_onnx/yolov3*.weights

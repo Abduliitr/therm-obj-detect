@@ -26,20 +26,22 @@ WINDOW_NAME = 'TrtSsdDemo'
 INPUT_HW = (300, 300)
 
 model="ssd_mobilenet_v1_coco"
-
+acc=[]
 import glob
 mylist=(glob.glob("/home/atmospheric/Downloads/Thermal Dataset/webcam/*"))
 path="/home/atmospheric/Downloads/Thermal Dataset/webcam/"
-print(mylist[0])
-file1 = open("myfile.txt","w") 
+
 t=time.time()
 for i,image in enumerate(mylist):
-	
+	if i%10==0:
+
+		time.sleep(10)
 	img = cv2.imread(image)
 	cls_dict = get_cls_dict(model.split('_')[-1])
 	trt_ssd = TrtSSD(model, INPUT_HW)
 	conf_th=0.3
 	boxes, confs, clss = trt_ssd.detect(img, conf_th)
 	print((i/len(mylist))*100)
+
 	
 print(time.time()-t)
